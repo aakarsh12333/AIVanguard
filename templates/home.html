@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINDIFY - Groq Image Analyzer</title>
+    <link rel="stylesheet" href="../styles/home.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+
+<body>
+    <!-- Cyberpunk Background Scene -->
+    <div class="cyberpunk-bg">
+        <canvas id="canvas3d"></canvas>
+        <div class="animated-robots-container"></div>
+        
+        <!-- Neon Grid Background -->
+        <div class="grid-background"></div>
+        
+        <!-- Animated City Lights -->
+        <div class="city-lights">
+            <div class="building building-1"></div>
+            <div class="building building-2"></div>
+            <div class="building building-3"></div>
+            <div class="building building-4"></div>
+            <div class="building building-5"></div>
+        </div>
+        
+        <!-- Glitch Effect Elements -->
+        <div class="glitch-lines"></div>
+        
+        <!-- Particles -->
+        <div id="particles-js"></div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="./index.html" class="back-btn">← BACK</a>
+
+    <!-- Help Button -->
+    <button id="helpBtn" class="help-btn" title="Need help? Click here!">
+        <span>?</span>
+    </button>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <div class="hero-title-wrapper">
+                    <h1 class="hero-title">
+                        <span class="title-char">W</span>
+                        <span class="title-char">I</span>
+                        <span class="title-char">N</span>
+                        <span class="title-char">D</span>
+                        <span class="title-char">I</span>
+                        <span class="title-char">F</span>
+                        <span class="title-char">Y</span>
+                    </h1>
+                </div>
+                <h2 class="hero-subtitle">VISION POWERED BY QUANTUM AI</h2>
+                <p class="hero-description">Upload. Analyze. Understand. Powered by Groq Intelligence</p>
+                <div class="hero-accent">
+                    <div class="accent-line"></div>
+                    <span class="accent-text">[ SYSTEM ONLINE ]</span>
+                    <div class="accent-line"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Generator Section -->
+        <section class="generator-section">
+            <div class="section-label">[ IMAGE ANALYSIS MODULE ]</div>
+            
+            <div class="generator-container">
+                <!-- Left Panel - Upload -->
+                <div class="panel left-panel">
+                    <div class="panel-header">
+                        <div class="header-icon">◆</div>
+                        <h3>IMAGE INPUT</h3>
+                        <div class="header-accent"></div>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <div class="upload-drop-zone">
+                            <div class="upload-icon-wrapper">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="upload-text">DRAG • DROP • PASTE</p>
+                            <p class="upload-subtext">or click to select image</p>
+                            <img class="upload-preview" alt="Preview" hidden>
+                        </div>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+
+                    <div class="panel-footer">
+                        <button class="btn btn-primary" id="initializeBtn">
+                            <span class="btn-icon">⚡</span>
+                            <span class="btn-text">CONNECT GROQ</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel - API Key -->
+                <div class="panel right-panel">
+                    <div class="panel-header">
+                        <div class="header-icon">🔐</div>
+                        <h3>GROQ KEY</h3>
+                        <div class="header-accent"></div>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <div class="token-input-wrapper">
+                            <label for="tokenInput" class="token-label">GROQ API KEY (OPTIONAL)</label>
+                            <div class="input-group">
+                                <input 
+                                    id="tokenInput" 
+                                    type="password" 
+                                    placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"
+                                    class="token-input"
+                                />
+                                <button id="saveTokenBtn" class="btn btn-secondary" style="white-space: nowrap;">
+                                    <span>💾 SAVE</span>
+                                </button>
+                            </div>
+                            <p class="token-status"></p>
+                        </div>
+                        <p class="token-info">
+                            Leave this blank to use the server key from <code>.env</code>, or paste your own Groq key from 
+                            <a href="https://console.groq.com/keys" target="_blank" class="info-link">console.groq.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options Panel -->
+            <div class="options-panel">
+                <div class="options-header">
+                    <h3>[ CONFIRM ANALYSIS ]</h3>
+                </div>
+                <p class="options-message">Ready to analyze your image with Groq Vision AI?</p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-primary" id="confirmBtn">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">LAUNCH ANALYSIS</span>
+                    </button>
+                    <button class="btn btn-secondary" id="cancelBtn">
+                        <span class="btn-icon">⊘</span>
+                        <span class="btn-text">CANCEL</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="section-label">[ ANALYSIS RESULTS ]</div>
+            <div class="results-panel" id="resultsPanel">
+                <div class="results-header">
+                    <div class="results-title-wrapper">
+                        <h3 class="results-title">IMAGE DESCRIPTION</h3>
+                        <div class="results-status" id="resultsStatus"></div>
+                    </div>
+                    <button class="btn btn-secondary" id="copyBtn">
+                        <span class="btn-icon">📋</span>
+                        <span>COPY</span>
+                    </button>
+                </div>
+                <div class="results-content">
+                    <pre id="resultCode" class="code-block">[ WAITING FOR IMAGE ANALYSIS... ]</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="section-label">[ CAPABILITIES ]</div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-number">01</div>
+                    <div class="feature-icon">🖼️</div>
+                    <h4>VISION</h4>
+                    <p>Advanced image recognition powered by Groq's vision-capable Llama model</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">02</div>
+                    <div class="feature-icon">⚡</div>
+                    <h4>SPEED</h4>
+                    <p>GPU-accelerated processing for instant results</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">03</div>
+                    <div class="feature-icon">🤖</div>
+                    <h4>QUANTUM AI</h4>
+                    <p>Next-generation AI models from Groq</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-number">04</div>
+                    <div class="feature-icon">🎯</div>
+                    <h4>PRECISION</h4>
+                    <p>Detailed analysis with objects, colors, and context</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Floating Cyber Elements -->
+    <div class="cyber-elements">
+        <div class="cyber-dot dot-1"></div>
+        <div class="cyber-dot dot-2"></div>
+        <div class="cyber-dot dot-3"></div>
+        <div class="cyber-line line-1"></div>
+        <div class="cyber-line line-2"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-modal-content">
+            <button class="help-close-btn" id="helpCloseBtn">✕</button>
+            
+            <div class="help-header">
+                <h2>🆘 HELP & TROUBLESHOOTING</h2>
+                <p>Sabke liye complete guide</p>
+            </div>
+
+            <div class="help-sections">
+                <!-- Getting Started Section -->
+                <div class="help-section">
+                    <h3>🚀 Getting Started (Shuru Kaise Karein)</h3>
+                    <div class="help-content">
+                        <ol>
+                            <li><strong>Get Groq Key:</strong> https://console.groq.com/keys par jaao</li>
+                            <li><strong>Create or Copy Key:</strong> Naya key generate karo ya existing key copy karo</li>
+                            <li><strong>Paste Here:</strong> "GROQ KEY" panel mein paste karo</li>
+                            <li><strong>Click SAVE:</strong> Save button click karo</li>
+                            <li><strong>Upload Image:</strong> Koi bhi image upload karo</li>
+                            <li><strong>Click CONNECT GROQ:</strong> "CONNECT GROQ" button ko click karo</li>
+                            <li><strong>Launch Analysis:</strong> Popup mein "LAUNCH ANALYSIS" click karo</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Errors & Solutions -->
+                <div class="help-section">
+                    <h3>⚠️ Common Errors (Agar Error Aaye)</h3>
+                    <div class="help-content">
+                        <div class="error-item">
+                            <h4>❌ "Groq key must start with gsk_"</h4>
+                            <p><strong>Matlab:</strong> Key galat format mein hai</p>
+                            <p><strong>Fix:</strong> Pura key copy karo jo gsk_ se start hota hai. Koi part miss na ho</p>
+                        </div>
+
+                        <div class="error-item">
+                            <h4>❌ "Invalid Groq API Key"</h4>
+                            <p><strong>Matlab:</strong> Key expired hai ya galat hai</p>
+                            <p><strong>Fix:</strong><br>
+                                → https://console.groq.com/keys par jaao<br>
+                                → Purana key delete karo<br>
+                                → Naya key create karo<br>
+                                → Naya key paste karke save karo
+                            </p>
+                        </div>
+
+                        <div class="error-item">
+                            <h4>❌ "Service Overloaded" ya "Model Unavailable"</h4>
+                            <p><strong>Matlab:</strong> Groq service busy hai</p>
+                            <p><strong>Fix:</strong><br>
+                                → 30 second wait karo<br>
+                                → Page refresh karo (F5)<br>
+                                → Dobara try karo
+                            </p>
+                        </div>
+
+                        <div class="error-item">
+                            <h4>❌ "Invalid Image Format"</h4>
+                            <p><strong>Matlab:</strong> Image format galat hai ya bahut bada hai</p>
+                            <p><strong>Fix:</strong><br>
+                                → PNG, JPG, ya WebP format use karo<br>
+                                → Image ka size 5MB se kam hona chahiye<br>
+                                → Dobara try karo
+                            </p>
+                        </div>
+
+                        <div class="error-item">
+                            <h4>❌ "Network Error" ya "Failed to fetch"</h4>
+                            <p><strong>Matlab:</strong> Internet connection issue hai</p>
+                            <p><strong>Fix:</strong><br>
+                                → Internet connection check karo<br>
+                                → Agar VPN use kar rahe ho to band karo<br>
+                                → Page refresh karo<br>
+                                → Dobara try karo
+                            </p>
+                        </div>
+
+                        <div class="error-item">
+                            <h4>❌ "CORS Error"</h4>
+                            <p><strong>Matlab:</strong> Browser cross-origin request block kar raha hai</p>
+                            <p><strong>Fix:</strong><br>
+                                → Page ko hard refresh karo (Ctrl+Shift+R)<br>
+                                → Browser cache clear karo<br>
+                                → Dobara try karo
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Tips -->
+                <div class="help-section">
+                    <h3>💡 Troubleshooting Tips</h3>
+                    <div class="help-content">
+                        <h4>✅ Pehle Yeh Check Karo:</h4>
+                        <ul>
+                            <li>Internet connection is working</li>
+                            <li>Groq key starts with "gsk_" (copy-paste properly)</li>
+                            <li>Image format PNG/JPG/WebP hai</li>
+                            <li>Image size 5MB se kam hai</li>
+                            <li>Browser developer console (F12) mein koi error dikhe to report karo</li>
+                        </ul>
+
+                        <h4>🔍 Browser Console Dekhne Ke Liye:</h4>
+                        <ol>
+                            <li>F12 press karo</li>
+                            <li>"Console" tab click karo</li>
+                            <li>Red error messages dekho</li>
+                            <li>Iss error ko apne help kar sakte ho par detailed information milti hai</li>
+                        </ol>
+
+                        <h4>🔐 Groq Key Security:</h4>
+                        <ul>
+                            <li>Groq key browser ke localStorage mein save hota hai (sirf tumhara device)</li>
+                            <li>Kisi ko apna key share mat karo❌</li>
+                            <li>Key kisi bhi server par nahi bheja jata ✅</li>
+                            <li>Share karne se pehle private browser tab mein check karo</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- FAQs -->
+                <div class="help-section">
+                    <h3>❓ Frequently Asked Questions (FAQs)</h3>
+                    <div class="help-content">
+                        <div class="faq-item">
+                            <h4>Q: Mera Groq key kahan save hota hai?</h4>
+                            <p>A: Browser ke localStorage mein sirf tumhare device par. Kisi server par nahi</p>
+                        </div>
+
+                        <div class="faq-item">
+                            <h4>Q: Kya free hai ye service?</h4>
+                            <p>A: Groq account aur rate limits plan ke hisaab se depend karte hain. Apne dashboard par check karo</p>
+                        </div>
+
+                        <div class="faq-item">
+                            <h4>Q: Multiple images analyze kar sakta hoon?</h4>
+                            <p>A: Bilkul! Ek ek karke images upload aur analyze kar sakta hai</p>
+                        </div>
+
+                        <div class="faq-item">
+                            <h4>Q: Result copy kar ke save kar sakta hoon?</h4>
+                            <p>A: Haan! 📋 COPY button se result copy kar sakta hai</p>
+                        </div>
+
+                        <div class="faq-item">
+                            <h4>Q: Agar fir bhi kaam na kare?</h4>
+                            <p>A: Browser refresh karo (F5) aur dobara try karo. Lagbhag sab issues solve ho jate hain</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="help-section">
+                    <h3>📞 Support</h3>
+                    <div class="help-content">
+                        <p>Agar koi issue na ho solve to:</p>
+                        <ul>
+                            <li>Browser console error screenshot lo (F12)</li>
+                            <li>Groq key format check karo (gsk_ se start hona chahiye)</li>
+                            <li>Groq console par directly check karo ki key active hai</li>
+                            <li>Internet connection stable hai confirm karo</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="help-footer">
+                <button class="btn btn-primary" id="helpOkBtn">✓ OK, SAMAJH Gaya!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Libraries -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="../scripts/script.js"></script>
+    <script src="../scripts/home.js"></script>
+
+</body>
+
+</html>
